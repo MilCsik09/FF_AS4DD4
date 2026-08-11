@@ -32,3 +32,20 @@ jobs:
           path: gradle-9.4.1-bin.zip
           if-no-files-found: error
           retention-days: 1
+
+  private-read-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Probe existing repository read credential
+        uses: actions/checkout@v4
+        with:
+          repository: MilCsik09/IceSMP
+          ref: audit/class-spell-cast-hardening
+          path: icesmp
+          fetch-depth: 1
+          persist-credentials: false
+          token: ${{ secrets.ICESMP_TOKEN || secrets.GH_PAT || secrets.PAT || github.token }}
+      - name: Verify checkout without publishing content
+        shell: bash
+        run: test -f icesmp/build.gradle.kts
