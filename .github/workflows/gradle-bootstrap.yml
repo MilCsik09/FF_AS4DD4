@@ -1,0 +1,29 @@
+name: Temporary Gradle bootstrap
+
+on:
+  push:
+    branches:
+      - tmp/gradle-9.4.1-bootstrap
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Download official Gradle 9.4.1 distribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --output gradle-9.4.1-bin.zip \
+            https://services.gradle.org/distributions/gradle-9.4.1-bin.zip
+          echo '65be4189804a2680b9a2aff2dd86cf36af40b21a20538d680c4ec7b6f1b257b8  gradle-9.4.1-bin.zip' | sha256sum --check
+      - name: Upload Gradle distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-9.4.1-bin
+          path: gradle-9.4.1-bin.zip
+          if-no-files-found: error
+          retention-days: 1
